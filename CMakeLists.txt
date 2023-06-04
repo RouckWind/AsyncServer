@@ -1,26 +1,19 @@
 cmake_minimum_required(VERSION 3.23)
 project(asyncserver)
 
+set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR};${CMAKE_MODULE_PATH}")
+
 set(CMAKE_CXX_STANDARD 14)
 set(PROJECT_NAME asyncserver)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
+macro(importQt5 TARGET_NAME)
+    if(Qt5_FOUND)
+        target_link_libraries(${TARGET_NAME}  Qt5::Core Qt5::Widgets)
+        set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON AUTOMOC ON AUTORCC ON)
+    endif ()
+endmacro()
 
-find_package(Qt5 REQUIRED COMPONENTS
-        Widgets
-    )
+add_subdirectory(gui)
 
-set(HEADERS
-
-)
-
-set(SOURCES
-    main.cpp
-)
-
-
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
