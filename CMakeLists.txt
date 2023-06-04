@@ -10,10 +10,11 @@ find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 macro(importQt5 TARGET_NAME)
     if(Qt5_FOUND)
-        target_link_libraries(${TARGET_NAME}  Qt5::Core Qt5::Widgets)
+        target_link_libraries(${TARGET_NAME}  PRIVATE Qt5::Core Qt5::Widgets)
         set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON AUTOMOC ON AUTORCC ON)
     endif ()
 endmacro()
 
 add_subdirectory(gui)
+add_subdirectory(lib)
 

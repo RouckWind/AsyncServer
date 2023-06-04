@@ -15,4 +15,6 @@ set(HEADERS
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE mylib)
+
 importQt5(${PROJECT_NAME})
