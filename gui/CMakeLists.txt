@@ -6,7 +6,6 @@ set(PROJECT_NAME gui)
 
 set(SOURCES
         src/mainwindow.cpp
-        src/mainwindow.ui
         main.cpp
 )
 
