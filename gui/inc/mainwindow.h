@@ -6,7 +6,7 @@
 #define ASYNCSERVER_MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QListView>
 #include <QPushButton>
 
@@ -16,6 +16,10 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+private slots:
+    void onpushButton_clicked();
+
+public:
     ~MainWindow() override;
 };
 
