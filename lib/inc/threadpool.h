@@ -7,6 +7,7 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 class ThreadPool {
 public:
@@ -21,7 +22,7 @@ private:
     void ThreadLoop();
 
 private:
-    bool m_terminate;
+    std::atomic<bool> m_terminate;
     std::mutex m_mutex;
     std::condition_variable_any m_condition;
     std::vector<std::thread> m_threads;
