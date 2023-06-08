@@ -7,7 +7,7 @@
 
 #include <QMainWindow>
 #include <QVBoxLayout>
-#include <QListView>
+#include <QListWidget>
 #include <QPushButton>
 
 class MainWindow : public QMainWindow {
