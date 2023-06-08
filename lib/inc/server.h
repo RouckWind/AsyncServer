@@ -1,13 +1,13 @@
+#include <cstddef>
+#include <fcntl.h>
+#include <functional>
+#include <netinet/in.h>
+#include <set>
+#include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <cstddef>
-#include <functional>
 #include <unistd.h>
-#include <fcntl.h>
 #include <vector>
-#include <string>
-#include <set>
 
 namespace TCPServer {
     class Server {
@@ -28,12 +28,12 @@ namespace TCPServer {
             bind(s_listener, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
         }
 
-        void stopServer(){
+        void stopServer() {
             close(s_socket);
         }
 
         bool connect(uint32_t host, uint16_t port) {
-           return true;
+            return true;
         }
 
         void listenSocket() {
@@ -44,8 +44,6 @@ namespace TCPServer {
             FD_SET(s_listener, &readset);
         }
 
-
-
         void acceptSocket() {
             s_socket = accept(s_listener, NULL, NULL);
 
@@ -53,8 +51,6 @@ namespace TCPServer {
                 bytes_read = recv(s_socket, buffer.data(), buffer.size(), 0);
             }
         }
-
-
 
     private:
         Socket s_socket;
@@ -65,6 +61,5 @@ namespace TCPServer {
         int bytes_read;
 
         std::set<int> clients;
-
     };
-}
+}  // namespace TCPServer
