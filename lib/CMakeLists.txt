@@ -6,10 +6,12 @@ set(PROJECT_NAME mylib)
 
 set(SOURCES
         src/server.cpp
+        src/threadpool.cpp
 )
 
 set(HEADERS
         inc/server.h
+        inc/threadpool.h
 )
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})

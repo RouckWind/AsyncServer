@@ -1,23 +1,20 @@
-//
-// Created by rouckwind on 04.06.23.
-//
-
-#ifndef ASYNCSERVER_MAINWINDOW_H
-#define ASYNCSERVER_MAINWINDOW_H
-
+#include <QListWidget>
 #include <QMainWindow>
-#include <QGridLayout>
-#include <QListView>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 class MainWindow : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
 
+private slots:
+
+    void onpushButton_clicked();
+
+public:
     ~MainWindow() override;
 };
 
-
-#endif //ASYNCSERVER_MAINWINDOW_H
+#endif  //ASYNCSERVER_MAINWINDOW_H
