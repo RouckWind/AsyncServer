@@ -16,5 +16,3 @@ private slots:
 public:
     ~MainWindow() override;
 };
-
-#endif  //ASYNCSERVER_MAINWINDOW_H
