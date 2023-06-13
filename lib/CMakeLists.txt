@@ -8,12 +8,14 @@ set(SOURCES
         src/server.cpp
         src/threadpool.cpp
         src/client.cpp
+        src/threadSafeQueue.cpp
 )
 
 set(HEADERS
         inc/server.h
         inc/threadpool.h
         inc/client.h
+        inc/threadSafeQueue.h
 )
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
