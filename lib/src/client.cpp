@@ -2,20 +2,16 @@
 
 namespace TCPClient {
 
-    void Client::createSocket() {
-        s_listener = socket(AF_INET, SOCK_STREAM, 0);
-        if (s_listener < 0) {
-            return;
-        }
-        fcntl(s_listener, F_SETFL, O_NONBLOCK);
-        sockaddr.sin_family = AF_INET;
-        sockaddr.sin_port = htons(6000);
-        sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
+    void Client::errorHandler(int n, const std::string& e_msg) {
+        std::cout << strerror(errno) << e_msg << std::endl;
     }
 
-    void Client::closeSocket() {
-        close(s_socket);
+    void Client::createSocket() {
+        errorHandler(socket(AF_INET, SOCK_STREAM, 0), " create Socket");
+
+        clientaddr.sin_family = AF_INET;
+        clientaddr.sin_port = htons(6000);
+        clientaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     }
 
     bool Client::connect(uint32_t host, uint16_t port) {
@@ -30,6 +26,12 @@ namespace TCPClient {
 
     void Client::writeData() {
     }
+
+
+    void Client::closeSocket() {
+        close(s_socket);
+    }
+
 }
 
 

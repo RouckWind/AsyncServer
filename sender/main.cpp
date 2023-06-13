@@ -22,13 +22,9 @@ void task4() {
 int main() {
     // TODO: need check of task counters and threads counters
     ThreadPool t(2);
-    TCPServer::Server server(6000);
+    TCPServer::Server server;
 
-    //t.AddTask(server.sendData("Hello"));
-    //t.AddTask(server.sendData());
     server.sendData("Hello\n");
-    server.getClients();
 
-    //server.readData();
     return 0;
 }
