@@ -1,21 +1,18 @@
 #pragma once
 
+#include <atomic>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>
 #include <vector>
-#include <atomic>
-
 
 class ThreadPool {
 public:
     using Task = std::function<void()>;
 
     explicit ThreadPool(uint32_t num_of_threads);
-
-    ThreadPool(const ThreadPool&) = delete;
 
     ~ThreadPool();
 
@@ -30,5 +27,5 @@ private:
     std::condition_variable m_condition;
     std::vector<std::thread> m_threads;
 
-    bool m_terminate { false };
+    bool m_terminate{false};
 };

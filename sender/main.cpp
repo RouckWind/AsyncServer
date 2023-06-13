@@ -1,6 +1,7 @@
 #include <iostream>
-#include <threadpool.h>
+#include <server.h>
 #include <thread>
+#include <threadpool.h>
 
 void task() {
     std::cout << "you run thread 1" << std::this_thread::get_id() << std::endl;
@@ -19,12 +20,15 @@ void task4() {
 }
 
 int main() {
-    ThreadPool t(3);
+    // TODO: need check of task counters and threads counters
+    ThreadPool t(2);
+    TCPServer::Server server(6000);
 
-    t.AddTask(task);
-    t.AddTask(task2);
-    t.AddTask(task3);
-    t.AddTask(task4);
+    //t.AddTask(server.sendData("Hello"));
+    //t.AddTask(server.sendData());
+    server.sendData("Hello\n");
+    server.getClients();
 
+    //server.readData();
     return 0;
 }

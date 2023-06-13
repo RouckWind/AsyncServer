@@ -1,36 +1,53 @@
-#include <cstddef>
-#include <fcntl.h>
+#pragma once
+
+#include "../inc/threadpool.h"
+
 #include <functional>
 #include <netinet/in.h>
 #include <set>
 #include <string>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <vector>
 
 namespace TCPServer {
     class Server {
         using Socket = int;
-        using Listener = int;
-
-        struct Client;
 
     public:
-        void startServer();
-        void stopServer();
-        bool connect(uint32_t host, uint16_t port);
-        void listenSocket();
-        void acceptSocket();
+        explicit Server(short _port)
+            : s_client{}
+            , s_listener{}
+            , server{}
+            , client{}
+            , msg{}
+            , buffer{}
+            , port{_port} {};
+
+        Server(const Server&) = delete;
+        Server(const Server&&) = delete;
+        ~Server();
+
+        void serverStart();
+        unsigned int getClients();
+        std::function<void()> sendData(const std::string& input);
+        void writeData();
+
 
     private:
-        Socket s_socket;
-        Listener s_listener;
+        static auto errorHandler();
+        void acceptLoop();
+        void waitLoop();
 
-        struct sockaddr_in sockaddr;
-        std::vector<char> buffer;
-        int bytes_read;
+    private:
+        Socket s_listener, s_client;
+
+        struct sockaddr_in server, client;
+        std::vector<std::string> buffer;
+        std::string msg;
 
         std::set<int> clients;
+        short port;
+
+        ThreadPool pool{ 3 };
     };
 }  // namespace TCPServer
