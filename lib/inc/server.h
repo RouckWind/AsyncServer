@@ -14,14 +14,7 @@ namespace TCPServer {
         using Socket = int;
 
     public:
-        explicit Server(short _port)
-            : s_client{}
-            , s_listener{}
-            , server{}
-            , client{}
-            , msg{}
-            , buffer{}
-            , port{_port} {};
+        Server();
 
         Server(const Server&) = delete;
         Server(Server&&) = default;
@@ -32,21 +25,23 @@ namespace TCPServer {
         void writeData();
 
         unsigned int getClients() { return clients.size(); };
+        void setPort(int n) { port = n; };
+        int getPort() { return port; }
 
     private:
-        static void errorHandler(int n, std::string e_msg);
+        static void errorHandler(int n, const std::string& e_msg);
         void acceptLoop();
         void waitLoop();
 
     private:
-        Socket s_listener, s_client;
+        Socket s_listener, s_client{};
 
-        struct sockaddr_in server, client;
+        struct sockaddr_in server{}, client{};
         std::vector<std::string> buffer;
         std::string msg;
 
         std::set<int> clients;
-        short port;
+        int port;
 
         ThreadPool pool{3};
     };

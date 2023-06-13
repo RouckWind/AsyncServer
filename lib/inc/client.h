@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include <iostream>
+#include <cstring>
 
 namespace TCPClient {
     class Client {
@@ -22,10 +24,13 @@ namespace TCPClient {
         void closeSocket();
 
     private:
+        void errorHandler(int n, const std::string& e_msg);
+
+    private:
         Socket s_socket;
         Listener s_listener;
 
-        struct sockaddr_in sockaddr;
+        struct sockaddr_in clientaddr;
         std::vector<char> buffer;
         int bytes_read;
     };
