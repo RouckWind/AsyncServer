@@ -1,65 +1,53 @@
-#include <cstddef>
-#include <fcntl.h>
+#pragma once
+
+#include "../inc/threadpool.h"
+
 #include <functional>
 #include <netinet/in.h>
 #include <set>
 #include <string>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <vector>
 
 namespace TCPServer {
     class Server {
         using Socket = int;
-        using Listener = int;
 
-        struct Client;
+    public:
+        explicit Server(short _port)
+            : s_client{}
+            , s_listener{}
+            , server{}
+            , client{}
+            , msg{}
+            , buffer{}
+            , port{_port} {};
 
-        void startServer() {
-            s_listener = socket(AF_INET, SOCK_STREAM, 0);
-            if (s_listener < 0) {
-                return;
-            }
-            fcntl(s_listener, F_SETFL, O_NONBLOCK);
-            sockaddr.sin_family = AF_INET;
-            sockaddr.sin_port = htons(6000);
-            sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-            bind(s_listener, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
-        }
+        Server(const Server&) = delete;
+        Server(const Server&&) = delete;
+        ~Server();
 
-        void stopServer() {
-            close(s_socket);
-        }
+        void serverStart();
+        unsigned int getClients();
+        std::function<void()> sendData(const std::string& input);
+        void writeData();
 
-        bool connect(uint32_t host, uint16_t port) {
-            return true;
-        }
-
-        void listenSocket() {
-            listen(s_listener, 1);
-
-            fd_set readset;
-            FD_ZERO(&readset);
-            FD_SET(s_listener, &readset);
-        }
-
-        void acceptSocket() {
-            s_socket = accept(s_listener, NULL, NULL);
-
-            while (1) {
-                bytes_read = recv(s_socket, buffer.data(), buffer.size(), 0);
-            }
-        }
 
     private:
-        Socket s_socket;
-        Listener s_listener;
+        static auto errorHandler();
+        void acceptLoop();
+        void waitLoop();
 
-        struct sockaddr_in sockaddr;
-        std::vector<char> buffer;
-        int bytes_read;
+    private:
+        Socket s_listener, s_client;
+
+        struct sockaddr_in server, client;
+        std::vector<std::string> buffer;
+        std::string msg;
 
         std::set<int> clients;
+        short port;
+
+        ThreadPool pool{ 3 };
     };
 }  // namespace TCPServer

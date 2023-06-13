@@ -2,18 +2,19 @@
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent) {
-    auto* layout1 = new QVBoxLayout(this);
+    setWindowTitle("MainWindow");
+    layout1 = new QVBoxLayout(this);
     setLayout(layout1);
 
-    auto* listWidget = new QListWidget(this);
-    auto* pushButton = new QPushButton("Выход", this);
+    listWidget = new QListWidget(this);
+    pushButton = new QPushButton("Выход", this);
 
     int widght = 450;
     int height = 350;
 
     setFixedSize(widght, height);
     listWidget->setFixedSize(widght, 300);
-    setWindowTitle("MainWindow");
+
 
     layout1->insertWidget(0, listWidget, Qt::AlignCenter);
 
@@ -28,5 +29,24 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onpushButton_clicked() {
-    close();
+    //close();
+    clientsCount();
+}
+
+void MainWindow::clientsCount() {
+    auto clients = server.getClients();
+    listWidget->insertItem(0 ,QString("Клиентов подключено: " + QString::number(clients)));
+}
+
+void MainWindow::clientJoined() {
+
+}
+
+void MainWindow::clientLeft() {
+}
+void MainWindow::sendData() {
+}
+void MainWindow::receiveData() {
+}
+void MainWindow::clientConnected() {
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <chrono>
+#include <atomic>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
@@ -10,20 +10,22 @@
 
 class ThreadPool {
 public:
+    using Task = std::function<void()>;
+
     explicit ThreadPool(uint32_t num_of_threads);
 
     ~ThreadPool();
 
-    void AddTask(const std::function<void()>& task);
-    void test(std::function<void()>);
+    void AddTask(Task task);
 
 private:
-    void ThreadLoop();
+    void DoWork();
 
 private:
-    bool m_terminate;
+    std::queue<Task> m_tasks;
     std::mutex m_mutex;
-    std::condition_variable_any m_condition;
+    std::condition_variable m_condition;
     std::vector<std::thread> m_threads;
-    std::queue<std::function<void()>> m_tasks;
+
+    bool m_terminate{false};
 };

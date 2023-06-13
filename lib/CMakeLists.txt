@@ -7,11 +7,13 @@ set(PROJECT_NAME mylib)
 set(SOURCES
         src/server.cpp
         src/threadpool.cpp
+        src/client.cpp
 )
 
 set(HEADERS
         inc/server.h
         inc/threadpool.h
+        inc/client.h
 )
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
