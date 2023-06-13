@@ -1,17 +1,18 @@
 #pragma once
 
-#include <condition_variable>
+#include "../inc/threadSafeQueue.h"
+
+#include <atomic>
 #include <functional>
-#include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
+#include <memory>
 
 class ThreadPool {
 public:
     using Task = std::function<void()>;
 
-    explicit ThreadPool(uint32_t num_of_threads);
+    static std::unique_ptr<ThreadPool> create(uint32_t num_of_threads);
 
     ~ThreadPool();
 
@@ -21,10 +22,9 @@ private:
     void DoWork();
 
 private:
-    std::queue<Task> m_tasks;
-    std::mutex m_mutex;
-    std::condition_variable m_condition;
-    std::vector<std::thread> m_threads;
+    explicit ThreadPool(uint32_t num_of_threads);
 
-    bool m_terminate{false};
+    thSafeQueue m_tasks;
+    std::vector<std::thread> m_threads;
+    std::atomic_bool m_terminate{false};
 };
