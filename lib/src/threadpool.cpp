@@ -31,7 +31,7 @@ ThreadPool::~ThreadPool() {
 }
 
 void ThreadPool::AddTask(Task task) {
-    std::unique_lock<std::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_tasks.emplace(std::move(task));
     m_condition.notify_one();
 }
@@ -52,6 +52,8 @@ void ThreadPool::DoWork() {
             task = m_tasks.front();
             m_tasks.pop();
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         task();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
