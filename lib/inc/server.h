@@ -24,17 +24,17 @@ namespace TCPServer {
             , port{_port} {};
 
         Server(const Server&) = delete;
-        Server(const Server&&) = delete;
+        Server(Server&&) = default;
         ~Server();
 
-        void serverStart();
-        unsigned int getClients();
-        std::function<void()> sendData(const std::string& input);
+        void startServer();
+        void sendData(const std::string& input);
         void writeData();
 
+        unsigned int getClients() { return clients.size(); };
 
     private:
-        static auto errorHandler();
+        static void errorHandler(int n, std::string e_msg);
         void acceptLoop();
         void waitLoop();
 
@@ -48,6 +48,6 @@ namespace TCPServer {
         std::set<int> clients;
         short port;
 
-        ThreadPool pool{ 3 };
+        ThreadPool pool{3};
     };
 }  // namespace TCPServer

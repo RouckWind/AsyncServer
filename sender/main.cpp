@@ -26,8 +26,10 @@ int main() {
 
     //t.AddTask(server.sendData("Hello"));
     //t.AddTask(server.sendData());
-    server.sendData("Hello\n");
-    server.getClients();
+    server.startServer();
+
+    //server.sendData("Hello\n");
+    //server.getClients();
 
     //server.readData();
     return 0;
