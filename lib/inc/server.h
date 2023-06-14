@@ -2,47 +2,53 @@
 
 #include "../inc/threadpool.h"
 
+#include <array>
 #include <functional>
 #include <netinet/in.h>
-#include <set>
 #include <string>
+#include <sys/epoll.h>
 #include <sys/socket.h>
-#include <vector>
+#include <list>
 
 namespace TCPServer {
     class Server {
+    public:
+        using Task = std::function<void()>;
         using Socket = int;
 
     public:
         Server();
 
         Server(const Server&) = delete;
-        Server(Server&&) = default;
+        Server(Server&&) noexcept = default;
+        //TODO rule of 5
         ~Server();
 
-        void startServer();
-        void sendData(const std::string& input);
-        void writeData();
+        Task sendData(const std::string& input);
+        Task writeData();
 
-        unsigned int getClients() { return clients.size(); };
+        [[nodiscard]] unsigned int getClients() { return clients.size(); };
         void setPort(int n) { port = n; };
-        int getPort() { return port; }
+        [[nodiscard]] int getPort() { return port; }
 
     private:
         static void errorHandler(int n, const std::string& e_msg);
-        void acceptLoop();
+        Task acceptLoop();
         void waitLoop();
 
     private:
         Socket s_listener, s_client{};
 
-        struct sockaddr_in server{}, client{};
-        std::vector<std::string> buffer;
-        std::string msg;
+        sockaddr_in server{}, client{};
 
-        std::set<int> clients;
+        int epollfd, nfds;
+
+        std::string buffer{};
+
+        epoll_event e_event, events[10];
+        std::list<int> clients;
         int port;
-
-        ThreadPool pool{3};
+        int bufferSize;
+        int handleMessage(int client);
     };
 }  // namespace TCPServer
