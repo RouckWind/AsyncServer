@@ -71,6 +71,7 @@ namespace TCPServer {
         if (buflen == 0) {
             close(fd);
             epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &events[iter]);
+            clients.pop_back();
         } else {
             sendData(fd);
         }
@@ -84,5 +85,8 @@ namespace TCPServer {
         close(s_listener);
         close(s_client);
         close(epollfd);
+    }
+    int Server::getClients() {
+        return clients.size();
     }
 }  // namespace TCPServer

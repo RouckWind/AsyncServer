@@ -23,12 +23,13 @@ namespace TCPServer {
         Server operator=(const Server&& other) = delete;
         ~Server();
 
-        void sendData(int fd);
-        void readData(int fd, int iter);
+        int getClients();
 
     private:
         static void errorHandler(int n, const std::string& e_msg);
         void acceptLoop();
+        void sendData(int fd);
+        void readData(int fd, int iter);
 
     private:
         int epollfd{}, nfds{}, buflen{};
