@@ -1,6 +1,5 @@
 #include "../inc/server.h"
 
-#include <cerrno>
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
@@ -8,100 +7,82 @@
 #include <unistd.h>
 
 namespace TCPServer {
-    using Task = std::function<void()>;
-
     void Server::errorHandler(int n, const std::string& e_msg) {
         std::cerr << strerror(n) << e_msg << std::endl;
     }
 
     Server::Server() {
-        errorHandler(s_listener = socket(AF_INET, SOCK_STREAM, 0), " start Server");
+        //create server socket
+        s_listener = socket(AF_INET, SOCK_STREAM, 0);
 
-        //fcntl(s_listener, F_SETFL, O_NONBLOCK);
-
+        // write parameters of server socket
         server.sin_family = AF_INET;
         server.sin_port = htons(6000);
         server.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        errorHandler(bind(s_listener, (struct sockaddr*)&server, sizeof(server)), " bind");
-        errorHandler(listen(s_listener, 10), " listen");
+        //bind local address to socket
+        bind(s_listener, reinterpret_cast<sockaddr*>(&server), sizeof(server));
 
-        //auto pool = ThreadPool::create(3);
+        // start listening connection on socket
+        listen(s_listener, 10);
 
         acceptLoop();
-        //sendData("test\n");
-        //writeData();
-
-        //pool->AddTask(acceptLoop());
-        //pool->AddTask(sendData("test\n"));
-        //pool->AddTask(writeData());
     }
 
-    Task Server::acceptLoop() {
-        errorHandler(epollfd = epoll_create1(0), " epoll");
+    void Server::acceptLoop() {
+        // create epoll for waiting i/o events from connections
+        epollfd = epoll_create1(0);
 
-        e_event.events = EPOLLIN;
-        e_event.data.fd = s_listener;
+        // add first event
+        ep_event.events = EPOLLIN;
+        ep_event.data.fd = s_listener;
 
-        errorHandler(epoll_ctl(epollfd, EPOLL_CTL_ADD, s_listener, &e_event), " epoll_ctl");
+        epoll_ctl(epollfd, EPOLL_CTL_ADD, s_listener, &ep_event);
         while (true) {
-            errorHandler(nfds = epoll_wait(epollfd, events, 10, -1), " epoll_wait");
+            nfds = epoll_wait(epollfd, events.data(), events.size(), -1);
             auto addrlen = sizeof(server);
-            for ( int n = 0; n < nfds; ++n) {
-                if(events[n].data.fd == s_listener) {
+            for (int i = 0; i < nfds; ++i) {
+                if (events[i].data.fd == s_listener) {
+                    // accept incoming connection
                     s_client = accept(s_listener, reinterpret_cast<sockaddr*>(&client), reinterpret_cast<socklen_t*>(&addrlen));
+
+                    //set nonblocking
                     fcntl(s_client, F_SETFL, O_NONBLOCK);
-                    epoll_ctl(epollfd, EPOLL_CTL_ADD, s_client, &e_event);
+
+                    ep_event.events = EPOLLIN;
+                    ep_event.data.fd = s_client;
+
+                    // add new client to epoll
+                    errorHandler(epoll_ctl(epollfd, EPOLL_CTL_ADD, s_client, &ep_event), " epoll_ctl");
+
+                    // add client to clients list
                     clients.push_back(s_client);
-                    sendData("Hello\n");
+
                 } else {
-                    handleMessage(events[n].data.fd);
-                    break;
+                    int clientfd = events[i].data.fd;
+                    readData(clientfd, i);
                 }
             }
         }
-
     }
 
-    Task Server::sendData(const std::string& input) {
-        errorHandler(bufferSize = send(s_client, input.data(), input.size(), 0), " send");
+    void Server::readData(int fd, int iter) {
+        buflen = recv(fd, buffer, bufferSize, 0);
+        if (buflen == 0) {
+            close(fd);
+            epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &events[iter]);
+        } else {
+            sendData(fd);
+        }
     }
 
-    Task Server::writeData() {
-        errorHandler(recv(s_client, (void*)buffer.data(), 1024, 0), " write");
-    }
-
-    void Server::waitLoop() {
+    void Server::sendData(int fd) {
+        buflen = send(fd, buffer, bufferSize, 0);
     }
 
     Server::~Server() {
-        std::cout << "destructor" << std::endl;
         close(s_listener);
         close(s_client);
         close(epollfd);
-    }
-
-    int Server::handleMessage(int c_fd) {
-        char buff[100], mess[100];
-
-        bzero(buff, 100);
-        bzero(mess, 100);
-
-        int len = recv(s_client, buff, 100, 0);
-        if (len == 0) {
-            clients.remove(c_fd);
-        } else {
-            if(clients.size() == 1) {
-                send(s_client, "NO ONE CONNECTED", strlen("NO ONE CONNECTED"), 0);
-                return len;
-            }
-            sprintf(mess, "Client ", c_fd, buff);
-            for (int & cl : clients) {
-                if (cl != c_fd) {
-                    send(cl, mess, 100, 0);
-                }
-            }
-        }
-        return len;
     }
 }  // namespace TCPServer
