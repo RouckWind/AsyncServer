@@ -14,24 +14,27 @@
 namespace TCPClient {
     class Client {
         using Socket = int;
-        using Listener = int;
 
     public:
-        void createSocket();
-        bool connect(uint32_t host, uint16_t port);
-        void readData();
-        void writeData();
-        void closeSocket();
+        Client() = delete;
+        explicit Client(const std::string& message);
+        ~Client();
 
     private:
         void errorHandler(int n, const std::string& e_msg);
+        void readData();
+        void sendData();
 
     private:
-        Socket s_socket;
-        Listener s_listener;
+        Socket c_socket;
 
-        struct sockaddr_in clientaddr;
-        std::vector<char> buffer;
-        int bytes_read;
+        sockaddr_in server;
+
+        static const int bufferSize = 100;
+        char buffer[bufferSize];
+
+        std::string response;
+
+        std::string message;
     };
 }  // namespace TCPServer

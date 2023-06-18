@@ -2,12 +2,13 @@
 
 #include "../inc/threadpool.h"
 
+#include <array>
 #include <functional>
+#include <list>
 #include <netinet/in.h>
-#include <set>
 #include <string>
+#include <sys/epoll.h>
 #include <sys/socket.h>
-#include <vector>
 
 namespace TCPServer {
     class Server {
@@ -17,32 +18,31 @@ namespace TCPServer {
         Server();
 
         Server(const Server&) = delete;
-        Server(Server&&) = default;
+        Server(Server&&) noexcept = delete;
+        Server operator=(const Server& other) = delete;
+        Server operator=(const Server&& other) = delete;
         ~Server();
 
-        void startServer();
-        void sendData(const std::string& input);
-        void writeData();
-
-        unsigned int getClients() { return clients.size(); };
-        void setPort(int n) { port = n; };
-        int getPort() { return port; }
+        int getClients();
 
     private:
         static void errorHandler(int n, const std::string& e_msg);
         void acceptLoop();
-        void waitLoop();
+        void sendData(int fd);
+        void readData(int fd, int iter);
 
     private:
+        int epollfd{}, nfds{}, buflen{};
+        sockaddr_in server{}, client{};
         Socket s_listener, s_client{};
 
-        struct sockaddr_in server{}, client{};
-        std::vector<std::string> buffer;
-        std::string msg;
+        static const int bufferSize = 100;
+        char buffer[bufferSize];
 
-        std::set<int> clients;
-        int port;
 
-        ThreadPool pool{3};
+        epoll_event ep_event{};
+        std::array<epoll_event, 1000> events{};
+
+        std::list<int> clients;
     };
 }  // namespace TCPServer

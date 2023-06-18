@@ -1,30 +1,26 @@
-#include <iostream>
-#include <server.h>
-#include <thread>
+#include <client.h>
 #include <threadpool.h>
 
-void task() {
-    std::cout << "you run thread 1" << std::this_thread::get_id() << std::endl;
-}
+#include <iostream>
+#include <string>
 
-void task2() {
-    std::cout << "you run thread 2" << std::this_thread::get_id() << std::endl;
-}
+std::string randomMessage(){
+    srand(time(NULL));
+    std::string result;
+    std::string symbols{ "abcdefghijklmnopqrstuvwxyz"};
 
-void task3() {
-    std::cout << "you run thread 3" << std::this_thread::get_id() << std::endl;
-}
-
-void task4() {
-    std::cout << "you run thread 4" << std::this_thread::get_id() << std::endl;
+    for( int i = 0; i < 10; ++i ) {
+        int random = rand() % 26;
+        result.push_back(symbols[random]);
+    }
+    return result;
 }
 
 int main() {
-    // TODO: need check of task counters and threads counters
-    ThreadPool t(2);
-    TCPServer::Server server;
+    //auto pool = ThreadPool::create(3) ;
+    TCPClient::Client client(randomMessage());
 
-    server.sendData("Hello\n");
+    //std::cout << randomMessage();
 
     return 0;
 }
