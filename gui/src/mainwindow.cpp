@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     pushButton->setGeometry(175, 305, 80, 40);
 
+
     connect(pushButton, &QPushButton::clicked, this, &MainWindow::onpushButton_clicked);
 }
 

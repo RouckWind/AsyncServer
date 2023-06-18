@@ -75,6 +75,7 @@ namespace TCPServer {
         } else {
             sendData(fd);
         }
+        std::cout << buffer;
     }
 
     void Server::sendData(int fd) {

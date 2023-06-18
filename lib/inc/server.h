@@ -37,7 +37,8 @@ namespace TCPServer {
         Socket s_listener, s_client{};
 
         static const int bufferSize = 100;
-        void* buffer[bufferSize];
+        char buffer[bufferSize];
+
 
         epoll_event ep_event{};
         std::array<epoll_event, 1000> events{};

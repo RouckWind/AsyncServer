@@ -6,32 +6,35 @@ namespace TCPClient {
         std::cout << strerror(errno) << e_msg << std::endl;
     }
 
-    void Client::createSocket() {
-        errorHandler(socket(AF_INET, SOCK_STREAM, 0), " create Socket");
+    Client::Client(const std::string& _message) {
+        message = _message;
+        errorHandler(c_socket = socket(AF_INET, SOCK_STREAM, 0), " create Socket");
 
-        clientaddr.sin_family = AF_INET;
-        clientaddr.sin_port = htons(6000);
-        clientaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    }
+        bzero(&server, sizeof(server));
 
-    bool Client::connect(uint32_t host, uint16_t port) {
-        return true;
+        server.sin_family = AF_INET;
+        server.sin_port = htons(6000);
+        server.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        errorHandler(connect(c_socket, reinterpret_cast<sockaddr*>(&server), sizeof(server)), " connect");
+        sendData();
+        readData();
     }
 
     void Client::readData() {
-        while (1) {
-            bytes_read = recv(s_socket, buffer.data(), buffer.size(), 0);
-        }
+        recv(c_socket, buffer, bufferSize, 0);
+
+        std::cout << buffer << std::endl;
     }
 
-    void Client::writeData() {
+    void Client::sendData() {
+        send(c_socket, message.c_str(), message.size(), 0);
+        std::cout << message << std::endl;
     }
 
-
-    void Client::closeSocket() {
-        close(s_socket);
+    Client::~Client() {
+        close(c_socket);
     }
-
 }
 
 
